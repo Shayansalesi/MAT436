@@ -1,0 +1,272 @@
+\documentclass[12pt]{extarticle}
+\usepackage{amsfonts, amsmath, amsthm}
+\usepackage{inputenc}
+\usepackage{graphicx, wrapfig}
+%\graphicspath{ {./images/} }
+\usepackage[margin=0.75in]{geometry}
+
+\newcommand\setIndent[1]{\setlength\itemindent{#1}}
+
+\newenvironment{indentone}{\begin{adjustwidth}{2em}{0em}}{\end{adjustwidth}}
+
+\newcommand\Reals{{\mathbb{R}}}
+\newcommand{\eone}{\epsilon_1}
+\newcommand{\etwo}{\epsilon_2}
+\newcommand{\ff}{\mathcal{F}}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\begin{document}
+	\begin{center}
+		\textbf{\Large Approximation Theory}
+	\end{center}
+	\begin{center}
+		Shayan Salesi
+	\end{center}
+
+\part{An introduction}
+	
+\section*{1.1 Prerequisites}
+To understand deeply the ideas in this paper, the reader is assumed to have a working knowledge of linear algebra, including the definition of vector spaces, and an understanding of Hilbert spaces and Banach spaces.
+
+\section*{1.2 Motivation}
+Given a function space X = $(X, \parallel \parallel)$, and a subset Y of X, we define for any $x\in X$ the following:
+\begin{equation}
+	\delta = \delta(x, Y) = \inf_{y\in Y}\parallel x-y \parallel
+\end{equation}
+We then want to find $y_0 \in Y$ s.t. $\norm{x-y_0} = \delta$, and we call $y_0$ the best approximation to x.
+	
+\section*{1.3 Existence}
+In the case that Y is a finite-dimensional subspace of the normed space X, the existence of a best approximation follows easily.
+
+\begin{theorem}
+	Let $Y\subseteq (X,\norm{})$ be a finite dimensional subspace. Then 
+	$\forall x\in X, \exists y_0\in Y, \norm{x-y_o} = \delta$.
+\end{theorem}
+\begin{proof}
+	Let $x\in X$ be arbitrary.
+	Let $\tilde{B} = \{y\in Y | \norm{y} \leq 2 \norm{x} \}$.\\
+	We have that $0\in \tilde{B}$, so $\delta(x,\tilde{B}) = \inf_{\tilde{y}\in\tilde{B}}\norm{x-\tilde{y}} \leq \norm{x-0} = \norm{x}$.\\
+	if $y\notin \tilde{B}$, then $\norm{y} \geq 2\norm{x}$, so 
+	$\norm{x-y} \geq \norm{y} = \norm{x} > \norm{x} \geq \delta(x, \tilde{B})$.\\
+	So then $\delta(x,\tilde{B}) = \delta(x,Y) = \delta$, and we cannot have $y\in Y-\tilde{B}$ because of the strict inequality. So the best approximation has to be in $\tilde{B}$.\\
+	The norm is continuous on Y, and $\tilde{B}$ is a closed and bounded subset of the finite-dimensional subset Y, so $\tilde{B}$ is compact. It follows that there is a minimum for the norm, that is, there is $y_0$ such that $\norm{x-y_0} = \delta$.
+\end{proof}
+Take for example X = C[a,b], and consider $Y=span\{x_0,...,x_n\}$, where $x_j(t) = t^j$. Then Y is a finite-dimensional subspace of C[a,b], so for any 
+$x\in X$, we have that there is a polynomial $p_n$ of degree at most n such that $\max_{t\in J}|x(t) - p_n(t)| \leq \max_{t\in J} |x(t) - y(t)|$ for any $y\in Y$, where J = [a,b].
+
+\section*{1.4 Uniqueness, Strict Convexity}
+\begin{definition}
+	Let X be a vector space, $M\subseteq X$. M is said to be convex if for any $y,z\in M$, we have $W = \{v = \alpha y + (1-\alpha) z | 0 \leq\alpha\leq 1\}$ is a subset of M.
+\end{definition}
+\begin{theorem}
+	In $(X, \norm{})$, the set M of best approximations to a point x from a subspace $Y\subseteq X$ is convex.
+\end{theorem}
+\begin{proof}
+	Let $\delta = \delta(x,Y)$. If M is empty or a single point, then the statement holds trivially, so suppose M has more than one point.\\
+	For any $y,z\in M$, $\norm{x-y} = \norm{x-z} = \delta$ by definition.\\
+	Let $w = \alpha y + (1-\alpha)z$. we will show w is in M. It follows that $\norm{x-w} \geq \delta$ since $w\in Y$, and $\norm{x-w} \leq\delta$ since
+	\begin{align*}
+		\norm{x-w} &= \norm{x-\alpha y - (1-\alpha)z}\\
+		&= \norm{\alpha(x-y) + (1-\alpha)(x-z)}\\
+		&\leq \alpha\norm{x-y} + (1-\alpha)\norm{x-z}\\
+		&= \alpha\delta + (1-\alpha)\delta = \delta
+	\end{align*}
+	so it follows that $w\in M$.
+\end{proof}
+
+We see that if x has more than one best approximation from the set Y, then Y and the closed ball $\overline{B_x(\delta)}$ must have a segment W in common.
+It must also be that $W\subseteq\partial\overline{B_x(\delta)}$. So for each $w\in W$, there is a corresponding $v = \delta^-\norm{w-x}$, $\norm{v} = 1$. That is, to each $w\in W$, there is a unique $v\in\partial\overline{B_0(1)}$. So to achieve uniqueness, we must exclude those norms for which the unit sphere contains segments of straight lines. This motivates the following definition:
+\begin{definition}
+	A strictly convex norm is a norm such that for all x,y of norm 1,
+	\begin{equation}
+		\norm{x+y} < 2
+	\end{equation}
+	A normed space with a strictly convex norm is called a strictly convex normed space.
+\end{definition}
+The following theorems follows:
+\begin{theorem}
+	If X is a strictly convex normed space, then for each x in X there is at most one best approximation from a subspace Y.
+\end{theorem}
+\begin{theorem}
+	A Hilbert space X is strictly convex.
+\end{theorem}
+\begin{proof}
+	for any x and $y\neq x$ of norm one,let $\norm{x-y} = \alpha$, then
+	\begin{equation}
+		\norm{x+y}^2 = -\norm{x-y}^2 + 2(\norm{x}^2 + \norm{y}^2) = -\alpha^2 + 4 < 4,
+	\end{equation}
+	so $\norm{x+y}<2$.
+\end{proof}
+\begin{theorem}
+	C[a,b] is not strictly convex.
+\end{theorem}
+\begin{proof}
+	Let $x_1(t) = 1$, and $x_2(t) = \frac{t-a}{b-a}$.\\
+	Then $\norm{x_1} = \norm{x_2} = 1$, and 
+	\begin{equation}
+		\norm{x_1+x_2} = \max_{t\in J}\left\lvert 1+\frac{t-a}{b-a}\right\rvert = 2,
+	\end{equation}
+	where J = [a,b].
+\end{proof}
+
+The main result is the following:
+\begin{theorem}
+For a given x in a Hilbert space X, and a given closed subspace Y of H, there is a unique best approximation to x from Y, namely the projection of x onto Y.
+\end{theorem}
+
+\part{Algebra :o}
+\section*{2.1 Smoother than smooth (algebraically smooth)}
+We seek an answer to the following question: if we have an abstract $\Reals$-algebra $\ff$, how can we find a set M whose $\Reals$-algebra of "smooth" functions can be identified with $\ff$?\\
+We impose for the remainder of this paper that $\ff$ is a commutative, associative algebra with unit over $\Reals$, where "with unit" simply means containing a multiplicative identity. All $\Reals$-algebra homomorphisms are assumed to be unital, meaning they map the multiplicative identity to the multiplicative identity of the co-domain.\\
+Let $M:=|\ff|$ be the set of $\Reals$-algebra homomorphisms of $\ff$ onto $\Reals$: $\{M\ni x: \ff\to\Reals, f\mapsto x(f)\}$. This is exactly the set that we wish to define as a manifold; as a wink to this near future, we name the element of M as $\Reals$-points of $\ff$, and and $|\ff|$ the \textit{dual space} of $\Reals$-points. We further define $\tilde{\ff}$ as
+\begin{equation}
+\tilde{\ff} := \{\tilde{f}:M\to \Reals| \tilde{f}(x) = x(f), f\in\ff\}
+\end{equation}
+This new set $\tilde{\ff}$ will be what we eventually hope to turn into our set of smooth functions. It is also an $\Reals$-algbera as the reader can verify. We have a natural map
+\begin{equation}
+\tau:\ff\to\tilde{\ff}, f\mapsto\tilde{f}
+\end{equation}
+If this map $\tau$ is an isomorphism, then $\tilde{\ff}$ is simply the anecdote of $\ff$ in the form of an $\Reals$-algebra of functions on the dual space M \cite{nestruev}. $\tau$ being a homomorphism follows by definitions, and surjectivity is immediate again by definition. Injectivity is a problem. There is no reason that our points in M have to have trivial null spaces, and since our definition of $\tilde{f}$ is a natural extension from the definition of M, there is then no reason that $\tau$ should be injective.\\
+BUT, we can make a restriction to ensure that $\tau$ is injective as follows:
+\begin{definition}
+An $\Reals$-algebra $\ff$ is geometric if 
+\begin{equation}
+\mathcal{I}(\ff) := \bigcap_{x\in M} Ker(x) = 0
+\end{equation}
+\end{definition}
+
+\begin{theorem}
+$\tau:\ff\to\tilde{\ff}$ is injective iff $\ff$ is geometric.
+\end{theorem}
+\begin{proof}
+\begin{align*}
+f\in Ker(\tau) & \leftrightarrow \tau(f) = \tilde{f} = 0 \\
+& \leftrightarrow \tilde{f}(x) = x(f) = 0 \forall x\in M \\
+& \leftrightarrow f\in \mathcal{I}(\ff).
+\end{align*}
+So $\mathcal{I}(\ff) = 0$ iff $\tau$ is injective.
+\end{proof}
+
+With all good isomorphisms comes abuse of notation and identification. Now that we have shown $\ff\simeq\tilde{\ff}$ we will say that $f\in\ff$ is a function from $M\to\Reals$. As well, from hereon we assume that our algebra $\ff$ is geometric. Why do we call it geometric? Because in a sense, it satisfying the trivial ideal property is the same as saying that it interacts with its dual space in a geometric sense; more precisely, $\ff$ is a top candidate to be the set of smooth functions on space M. We have in a sense answered the question that was posed at the beginning of this section. But like any budding mathematicians, we move forward.
+
+\section*{2.2 Topologize my Algebra}
+We now seek a topology on the dual space $M := |\ff|$ of $\Reals$-points.\\
+So far, we have made the identification for $f\in\ff$, $f\simeq\tilde{f}$, where $\tilde{f}: M\to\Reals, \tilde{f}(x) = x(f)$. We can think of our elements/functions in $\ff$ as measuring devices on the dual space M. Thus we simply inherit the topology from $\Reals$ through each of these "measuring devices." We take the set $\mathcal{B} = \{f^-(V)\subseteq M|V\subseteq\Reals$ open,$f\in\ff\}$, and give M the topology generated by this set. This is well-defined as M has an identity element, thus the whole space M is topologized. As the topology is inherited from $\Reals$, all functions in $\ff$ are continuous, and this topology makes M Hausdorff. As well, $\ff$ is a subalgebra of the algebra of continuous functions on M. The reader is encouraged to prove that this is indeed a topology on M.
+
+\section*{2.3 Restrictions}
+We are almost at a point where we can say that $\ff$ is locally isomorphic to $C^\infty(\Reals^n)$. Once we climb that mountain, the light shines upon us, and we are then only a few more mountains away from defining a manifold in terms of its $\Reals$-algebra of functions. To get to the peak of this first mountain, we need a few definitions and ideas.
+\begin{definition}
+Suppose $A\subseteq M$ is any subset of the dual space of $\ff$;  we define
+$\restr{\ff}{A}$, the \textit{restriction} of $\ff$ to A, to be the set of functions $f:A\to\Reals$ in $\ff$ such that for all $a\in A$, there is a neighbourhood $V\subseteq A$ of the point a and $f_a\in\ff$ such that $\restr{f_a}{V}=\restr{f}{V}$.
+\end{definition}
+This is similar to how smoothness of a function on an arbitrary subset of a manifold is defined. It is in effect relating this local neighbourhood of the point back to the original structure of $\ff$.\\
+We begin subtle attempts of identifying the algebra of functions $\ff$ with the algebra of functions of $\Reals^n$.
+\begin{proposition}
+Let $U\subseteq\Reals^n$ be open and non-empty. Let $\ff = C^\infty(U)$. If V is open in $U=|\ff|$, then $\restr{\ff}{V}=C^\infty(V)$.
+\end{proposition}
+This is to say that restrictions play by the rules, and that openness in the parent structure translates to inherited structure.\\
+We can assign to any $f\in\ff$ its restriction to an arbitrary subset A. This brings to life the restriction homomorphism $\rho_A:\ff\to\restr{\ff}{A}, f\mapsto\restr{f}{A}$. We need to say a few things about $\rho$. It is easy to think it is an isomorphism; indeed, as $\ff$ is geometric, $\rho$ is injective as we have a clean relational structure between $|\ff|$ and $\ff$. But is it surjective? Not necessarily. We have to realize the subtleties of algebra, and be better than them: $\restr{\ff}{|\ff|}$ is not the same thing as $\ff$, it is just a space in which the functions (the dual functions) locally look like $\ff$, but what reason is there for these spaces to be the same? There is no reason for them too. Its a matter of chance, so we follow tradition and name those algebras in which this property is matched:
+\begin{definition}
+A geometric $\Reals$-algebra $\ff$ is \textit{complete} if $\rho:\ff\to\restr{\ff}{|\ff|}$ is surjective.
+\end{definition}
+If $\ff$ is complete, then any function $M\to\Reals$ that locally coincides with elements of $\ff$ is an element of $\ff$ itself \cite{nestruev}. Then the name "complete" makes sense; it is literally complete, all-encompassing, almost god-like. We are almost at the peak of our first mountain.
+\begin{definition}
+A geometric $\Reals$-algebra $\ff$ is closed with respect to smooth composition, ie $C^\infty$ closed, if for any finite $f_1,...,f_k\in\ff$, and a function $g\in C^\infty(\Reals^k)$, there exists $f\in\ff$ such that for all $a\in |\ff|$,
+\begin{equation}
+f(a)=g(f_1(a),...,f_k(a))
+\end{equation}
+\end{definition}
+Simply put, elements of $\ff$ can be mashed together and then kind of resemble each other after a smooth transformation. This does not have to always be the case. We want to able to contort a given $\ff$ to obtain  $C^\infty$-closed version of it, call it $\bar{\ff}$, assuming $\ff$ itself is not $C^\infty$-closed.\\
+We do it by the following procedure:\\
+Identify $\ff$ with $\tilde{\ff}$, the algebra of function on M that we defined long-ago. Then Consider
+\begin{equation}
+\bar{\ff} := \{f\in\ff|f=g(f_1,...,f_k); f_1,...,f_k\in\ff; g\in C^\infty(\Reals^k)\}
+\end{equation}
+If $\ff$ is already closed with respect to smooth composition, then this will just be $\ff$ itself. If not, this is the set of functions in $\ff$ that can be smoothly transformed to given a bunch of other functions in $\ff$. We note that $\bar{\ff}$ has an $\Reals$-algebra structure inherited from $\ff$, and $\ff\subseteq\bar{\ff}$ is a sub-algebra. we also have the inclusion map $i_\ff: \ff\to\bar{\ff}$. We connect a geometric algebra and its closure.
+\begin{proposition}
+Any homomorphism $\alpha:\ff\to\ff'$ of a geometric $\Reals$-algebra into a $C^\infty$-closed $\Reals$-algebra $\ff'$ can be uniquely extended to a homomorphism $\bar{\alpha}:\bar{\ff}\to\ff'$ of its $C^\infty$-closure $\bar{\ff}$.
+\end{proposition}
+\begin{definition}
+A $C^\infty$-closed geometric $\Reals$-algebra $\bar{\ff}$ together with the inclusion $i_\ff:\ff\to\bar{\ff}$ is called a \textbf{smooth envelope} of $\ff$ if for any homomorphism $\alpha:\ff\to\ff'$ of $\ff$ into a $C^\infty$-closed $\Reals$-algebra $\ff'$, there is a unique homomorphism $\bar{\alpha}:\bar{\ff}\to\ff'$. Furthermore, the smooth envelope of $\ff$ is unique up to isomorphism.
+\end{definition}
+It is almost like the smooth envelope of a geometric algebra $\ff$ is the interface used to interact with the world of algebras closed under smooth composition. In fact, in wanting to say that $\ff$ is locally isomorphic to $C^\infty(\Reals^n)$, we HAVE to use the smooth envelope of $\ff$ to make this interaction possible; $\ff$ cannot "communicate" with the smoothly-closed world if it itself is not smoothly closed. With these definitions above, we can say that $\ff$ is locally isomorphic to $\Reals^n$ by considering its closure, or the smooth envelope of $\ff$.
+
+\part{The Birth of a Manifold}
+\section*{3.1 Algebraic Definition of a Manifold}
+We are ready to define a manifold in terms of the developments up to this point.
+\begin{definition}
+A complete, geometric $\Reals$-algebra $\ff$ is \textbf{smooth} if there exists a finite or countable open covering $\{U_k\}$ of $|\ff|$ such that all algebras $\restr{\ff}{U_k}$ are isomorphic to the algebra $C^\infty(\Reals^n)$ of smooth functions in euclidean space. The fixed positive integer n is the dimension of the algebra $\ff$.
+\end{definition}
+The countability coincides with the Hausdorffness of $|\ff|$ to eventually help us show the two definitions are equivalent. These smooth real algebras of smooth functions are to be viewed as the set of smooth functions on some smooth manifold, namely $M=|\ff|$. These open neighbourhoods in $\ff$ are in effect the charts that we are normally used to on a manifold. Furthermore, $\ff$ entirely determines the manifold M as the dual space of it's $\Reals$-points \cite{nestruev}.\\
+Given the pair $(\ff, |\ff|=M)$, we call it a \textit{smooth manifold}. By abuse of notation, we call M the smooth manifold. We also say that $\ff$ is the algebra of smooth functions on the manifold M. To prove the dimension of a smooth algebra is well-defined would require Sard's theorem on singular points of smooth maps, which is beyond the scope of this paper. We take it as proof by authority that the dimension of a smooth algebra is invariant, i.e. not dependent on the choice of covering are isomorphisms.\\
+We do not even need to define atlases or charts, since these follow trivially from an algebraic definition; the smooth envelopes patch together in the most natural manner to give the manifold $M=|\ff|$ its smooth structure.
+\section*{3.2 Smooth Maps}
+We first define the dual map of a $\Reals$-algebra homomorphism:
+\begin{definition}
+Let $\ff_1$ and $\ff_2$ be two geometric $\Reals$-algebras, and $\psi:\ff_1\to\ff_2$ an $\Reals$-algebra homomorphism. Then there is a dual map
+\begin{equation}
+|\psi|:|\ff_2|\to|\ff_1|, x\mapsto x\circ\psi
+\end{equation}
+\end{definition}
+The continuity of the dual map follows easily from noticing that the topologies of the dual spaces are inherited from the algebras of functions. I encourage the reader to consult \cite{nestruev}, section 3.19 for the proof. Further, if $\psi$ is an isomorphism, them $|\psi|$ is a homeomorphism. This can be realized as a functorial property; an isomorphism in the category of $\Reals$-algebras is a homeomorphism in the topological category.
+\begin{definition}
+Let $\ff_1$ be the algebra of smooth functions on $M_1$, and $\ff_2$ the algebra of smooth functions on $M_2$. The map $f:M_1\to M_2$ is called \textbf{smooth} if $f=|\psi|$ for some $\Reals$-algebra homomorphism $\psi$.
+\end{definition}
+All that is happening is that we are saying a map is smooth if it is a homomorphism of the algebras. That is, it fits nicely with the algebras, and is unital, so the structure of the algebras of smooth functions is preserved; in this case, this map must be smooth itself.
+
+\section*{3.3 Equivalence of coordinate and algebraic definitions}
+The equivalence of the definitions is carried out in two theorems.
+\begin{theorem}
+Suppose $\ff=C^\infty(M)$ is the algebra of smooth functions on a manifold M (by the coordinate definition). Then $\ff$ is a smooth $\Reals$-algebra (by the algebraic definition), and the map
+\begin{equation}
+\mu:M\to |\ff|, \mu_p(f) = f(p)
+\end{equation}
+is a homeomorphism.
+\end{theorem}
+The proof of this theorem is monstrous, so I give an outline below of the steps required:
+\begin{itemize}
+\item
+Establish that $\mu$ is a bijection.
+\item
+Show that it is a homeomorphism.
+\item
+Show that $C^\infty(M)$ is geometric and complete.
+\item
+Show that $C^\infty(M)$ is smooth in the algebraic sense.
+\end{itemize}
+The last two steps are required to make the claim that $\ff$ is a smooth $\Reals$-algebra. By showing that the two spaces are homeomorphic, we can REALLY abuse the idea of smooth structures and say that they are also diffeomorphic (this would involve transferring the ideas of smooth envelopes into a pseudo-atlas to be able to talk about smoothness in the usual sense). So really, they are the same space, and $|\ff|$ is indeed the same as the the manifold M. This is a fascinating insight; the set of functions on a space, when they are properly behaved, define the space itself. This really goes to show that functions are the devices of measurement; they tell us the shape and structure of a space in a subtle way, and we then have to impose additional structures on these spaces of functions to be able to reach a meta-description of the space. But the functions are everything: measurement is space, and space is measurement. We cover another theorem that patches together the definition of a smooth atlas (by the coordinate definition) and our new algebraic definitions.
+\begin{theorem}
+Let $\ff$ be any smooth $\Reals$-algebra. Then there exists a smooth atlas A on the dual space M=$|\ff|$ such that the map
+\begin{equation}
+\ff\to C^\infty(M), f\mapsto (p\mapsto p(f))
+\end{equation}
+of the algebra $\ff$ onto the algebra $C^\infty(M)$ of smooth functions on M with respect to the smooth atlas A is an isomorphism.
+\end{theorem}
+In what seems to be the theme, the proof of this theorem is another monstrosity. The outline of the proof would go like so:
+\begin{itemize}
+\item
+Construct a chart $x:U\to\Reals^n$ for each open set in the countable covering of $|\ff|$.
+\item
+Show these charts are piecewise compatible.
+\item
+Show that $f\in\ff$ iff $f\in C^\infty(M)$.
+\end{itemize}
+First thing to note is that here we have identified $(\ff, M=|\ff|)$ with the coordinate-defined manifold M, which is permissible by theorem 4. Second, theorem 4 showed (coordinate definition) $\Rightarrow$ (algebraic definition). Theorem 5 shows (algebraic definition) $\Rightarrow$ (coordinate definition). In effect, all theorem 5 is saying is that if we have a smooth real algebra - i.e. it has necessary and sufficient "nice" coniditions - then this is exactly the space of smooth functions on the corresponding coordinate-defined manifold.\\
+Theorems 4 and 5 together show that the two definitions are indeed equal.
+\part{Conclusion}
+In hindsight, it is almost granted that the space of functions, given enough structure, should determine a smooth manifold. Thinking of functions as devices of measurement on a space (the manifold), we can say that if the devices can flow nicely together ($C^\infty$-closed), describe the space without failure (geometric algebra), and describe the space completely (complete algebra), then they must give a complete and sufficient description of the space; instead of looking at the space directly, we can take its heartbeat, stamina, and blood vitals, and get enough information to be able to say that we know this space completely.\\
+At the end of all this, it is important to realize the interplay between different areas of mathematics. They are all describing similar ideas, trying to achieve an understanding of some space of structure. To get from point A to point B, one may walk, another drive a car, and yet another fly. But they are all still modes of transportation, different languages that really reflect the same actions. I leave it to you, dear reader, to think about how the definitions in these paper (where not explicitly mentioned) are simple, equivalent anecdotes for those definitions given in the manner of coordinates. As well, I refer the curious reader to the text in the reference, of which this paper is an incomplete summary.
+\bibliographystyle{plain}
+\nocite{*}
+\bibliography{367_bibliography.bib}
+\end{document}

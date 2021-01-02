@@ -1,0 +1,16 @@
+\begin{thebibliography}{1}
+
+\bibitem{chazal2017introduction}
+Fr{\'e}d{\'e}ric Chazal and Bertrand Michel.
+\newblock An introduction to topological data analysis: fundamental and
+  practical aspects for data scientists.
+\newblock {\em arXiv preprint arXiv:1710.04019}, 2017.
+
+\bibitem{gidea2018topological}
+Marian Gidea and Yuri Katz.
+\newblock Topological data analysis of financial time series: Landscapes of
+  crashes.
+\newblock {\em Physica A: Statistical Mechanics and its Applications},
+  491:820--834, 2018.
+
+\end{thebibliography}
